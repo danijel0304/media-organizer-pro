@@ -1,0 +1,17 @@
+.gitlocal/
+.git/
+.agents/
+.codex/
+__pycache__/
+*.py[cod]
+*.pyo
+*.log
+dist/
+build/
+*.spec
+*.AppImage
+*.deb
+*.tar.gz
+*.zip
+.venv/
+venv/

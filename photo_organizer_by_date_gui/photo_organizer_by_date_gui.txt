@@ -1,0 +1,198 @@
+📸 Photo Organizer Pro
+Organizirajte fotografije automatski po godini snimanja!
+
+Photo Organizer Pro je moćan alat za organizaciju digitalnih fotografija koji automatski sortira slike u mape po godini snimanja na temelju EXIF meta podataka ili datuma kreiranja datoteke.
+
+✨ Glavne značajke
+🔍 Automatska detekcija datuma - čita EXIF podatke ili datum kreiranja
+
+📁 Pametno sortiranje - organizira u mape po godinama
+
+🎨 Moderan GUI - intuitivno i lijepo korisničko sučelje
+
+📊 Detaljan pregled - prikaz statistike po godinama
+
+⚡ Brza obrada - podržava multithreading
+
+📝 Detaljni log - bilježi sve radnje
+
+⚠️ Prepoznavanje problema - poseban pregled za slike bez datuma
+
+📋 Podržani formati slika
+JPEG/JPG
+
+PNG
+
+GIF
+
+BMP
+
+TIFF
+
+WebP
+
+HEIC
+
+RAW (CR2, NEF, itd.)
+
+🚀 Instalacija
+Prvi put koristite?
+Preuzmite Python (ako ga već nemate):
+
+Preuzmite s python.org
+
+Pri instalaciji obavezno označite "Add Python to PATH"
+
+Instalirajte potrebne pakete:
+
+bash
+pip install Pillow ttkbootstrap
+Pokrenite program:
+
+bash
+python photo_organizer_gui.py
+🎮 Kako koristiti
+Korak po korak:
+Pokrenite program
+
+Odaberite izvornu mapu - mapa gdje se nalaze vaše fotografije
+
+Odaberite odredišnu mapu - gdje će se kreirati organizirane mape
+
+Kliknite "Analiziraj fotografije" - program će pregledati sve slike
+
+Pregledajte rezultate u karticama:
+
+📊 Pregled po godinama - koliko slika ima za svaku godinu
+
+📝 Detaljni log - sve radnje i poruke
+
+⚠️ Bez datuma - slike koje nije mogao obraditi
+
+Kliknite "Organiziraj fotografije" - izvršite sortiranje
+
+📂 Kako funkcionira
+Čitanje EXIF podataka - prvo pokušava pročitati datum snimanja iz EXIF meta podataka
+
+Alternativni datum - ako nema EXIF podataka, koristi datum kreiranja datoteke
+
+Kreiranje mapa - za svaku godinu kreira posebnu mapu u odredišnoj mapi
+
+Premještanje - premješta slike u odgovarajuće mape
+
+Jedinstvena imena - ako već postoji slika s istim imenom, automatski dodaje broj
+
+🔧 Struktura mape nakon organizacije
+text
+Odredišna_mapa/
+├── 2020/
+│   ├── slika1.jpg
+│   ├── slika2.jpg
+│   └── ...
+├── 2021/
+│   ├── fotografija.jpg
+│   ├── putovanje.jpg
+│   └── ...
+├── 2022/
+│   └── ...
+└── 2023/
+    └── ...
+💡 Savjeti za korištenje
+Prije organizacije:
+Napravite sigurnosnu kopiju vaših fotografija
+
+Testirajte na manjem broju slika prvo
+
+Provjerite jesu li sve fotografije u podržanim formatima
+
+Za bolje rezultate:
+Digitalni fotoaparati obično imaju najtočnije EXIF podatke
+
+Slike s mobitela također čuvaju EXIF podatke
+
+Starije skenirane fotografije možda neće imati datum
+
+Ako ne radi kako treba:
+Provjerite imate li administratorska prava
+
+Provjerite jesu li mape zaštićene
+
+Provjerite imate li dovoljno prostora na disku
+
+❓ Često postavljana pitanja
+P: Mijenja li program originalne slike?
+O: Ne, samo ih premješta u nove mape. Sadržaj slika ostaje netaknut.
+
+P: Što ako dvije slike imaju isto ime?
+O: Program automatski dodaje broj na kraj imena (npr. slika_1.jpg, slika_2.jpg).
+
+P: Mogu li otkazati operaciju?
+O: Da, možete otkazati bilo kada klikom na X gumb.
+
+P: Koliko vremena treba za organizaciju?
+O: Ovisi o broju slika. 1000 slika treba ~1-2 minute.
+
+P: Radi li na Mac ili Linux?
+O: Da, program radi na svim operativnim sustavima (Windows, macOS, Linux).
+
+⚠️ Upozorenja
+Uvijek napravite sigurnosnu kopiju prije korištenja bilo kojeg alata za organizaciju
+
+Program ne može vratiti slike na izvorne lokacije automatski
+
+Slike bez datuma ostaju u izvornoj mapi
+
+Program ne podržava video datoteke
+
+🐛 Rješavanje problema
+Problem: "ModuleNotFoundError: No module named 'PIL'"
+Rješenje: Instalirajte Pillow:
+
+bash
+pip install Pillow
+Problem: Program se zatvara nakon pokretanja
+Rješenje: Pokrenite iz naredbenog retka da vidite pogrešku:
+
+bash
+python photo_organizer_gui.py
+Problem: Slike se ne premještaju
+Rješenje: Provjerite imate li dopuštenje za pisanje u odredišnu mapu.
+
+Problem: Datumi su pogrešni
+Rješenje: Provjerite EXIF podatke slike pomoću drugog programa.
+
+🔄 Razlike između GUI i CLI verzije
+Značajka	GUI verzija	CLI verzija
+Sučelje	Grafičko	Naredbeni redak
+Pregled rezultata	Vizualne kartice	Tekstualni prikaz
+Progress bar	Da	Da (tekstualni)
+Detaljni log	U stvarnom vremenu	U stvarnom vremenu
+Multithreading	Da	Ne
+Stil	Moderni dark/light	Standardni terminal
+📝 Licenca
+Ovaj program je besplatan za osobnu upotrebu. Možete ga koristiti, dijeliti i mijenjati po želji.
+
+🤝 Doprinosi
+Ako pronađete bug ili imate prijedlog:
+
+Provjerite postoji li problem već u issues
+
+Otvorite novi issue s detaljnim opisom
+
+Ako znate programirati, pošaljite pull request
+
+📞 Kontakt i podrška
+Za pitanja i probleme:
+
+Pročitajte FAQ odjeljak
+
+Provjerite je li problem već opisan
+
+Ako nije, otvorite issue s detaljima
+
+🌟 Zahvala
+Hvala što koristite Photo Organizer Pro! Nadamo se da će vam olakšati organizaciju fotografija.
+
+Napomena: Uvijek preporučujemo da testirate program na kopijama vaših fotografija prije nego što počnete s organizacijom originala.
+
+Sretno organiziranje! 📸✨

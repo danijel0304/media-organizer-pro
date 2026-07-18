@@ -1,0 +1,329 @@
+📸 Organizator Slika Pro
+Napredni alat za sortiranje, organizaciju i upravljanje fotografijama
+
+https://img.shields.io/badge/Python-3.6+-blue.svg
+https://img.shields.io/badge/License-MIT-green.svg
+https://img.shields.io/badge/GUI-Tkinter-orange.svg
+
+🌟 Karakteristike
+📁 Organizacija i Sortiranje
+Inteligentno sortiranje po datumu, kameri, rezoluciji ili veličini
+
+Automatsko grupiranje slika u hijerarhijske foldere
+
+Detekcija duplikata pomoću MD5 hash algoritma
+
+Kopiranje duplikata u poseban folder za pregled
+
+🎨 Napredne Funkcije
+Višestruki formati podrške (JPG, PNG, RAW, HEIC, GIF, TIFF, WebP)
+
+Filtriranje po veličini (minimalna i maksimalna veličina u MB)
+
+Preimenovanje datoteka s predlošcima
+
+Zadržavanje strukture originalnih mapa
+
+Generiranje log datoteka za praćenje obrade
+
+🔧 Sigurnosne Opcije
+Automatski backup prije bilo kakvih promjena
+
+Opcija kopiranja (umjesto premještanja) za sigurnost
+
+Zaštita od gubitka podataka
+
+Detaljni izvještaji o obradi
+
+🖥️ Moderna GUI Sučelje
+Tamna tema s modernim dizajnom
+
+Real-time status obrade
+
+Detaljne statistike direktorija
+
+Intuitivni kontrola s kartama
+
+📸 Snimke Zaslona
+text
+[GUI Interface Preview]
+┌─────────────────────────────────────────────────────────────┐
+│                    🖼️ Organizator Slika Pro                  │
+├─────────────────────────────────────────────────────────────┤
+│ 📁 Direktoriji         │ 📊 Status                          │
+│ ⚙️ Osnovne opcije      │ ℹ️ Informacije                     │
+│ 🎨 Filtri i formati    │ ⚡ Statistike                      │
+│ ✏️ Preimenovanje       │                                   │
+│ 🔧 Napredne opcije     │                                   │
+│ 🌟 Dodatne funkcije    │                                   │
+│ [⚡ POKRENI ORGANIZACIJU SLIKA]                            │
+└─────────────────────────────────────────────────────────────┘
+🚀 Instalacija
+📋 Preduvjeti
+Python 3.6 ili noviji
+
+Tkinter (obično dolazi s Python instalacijom)
+
+🔧 Instalacija ovisnosti
+bash
+# Kloniraj repozitorij
+git clone https://github.com/tvoj-username/organizator-slike-pro.git
+
+# Navigiraj u direktorij projekta
+cd organizator-slike-pro
+
+# Instaliraj potrebne biblioteke
+pip install pillow
+💡 Korištenje
+1. Pokretanje programa
+bash
+python organizator_slika_pro.py
+2. Osnovni koraci
+Odaberi izvorni direktorij - folder sa slikama koje želiš organizirati
+
+Odaberi odredišni direktorij - folder gdje će se organizirane slike spremiti
+
+Postavi opcije prema svojim potrebama
+
+Pritisni gumb "Pokreni organizaciju slika"
+
+3. Konfiguracijske opcije
+📁 Direktoriji
+Izvorni direktorij: Lokacija s originalnim slikama
+
+Odredišni direktorij: Lokacija za organizirane slike
+
+⚙️ Osnovne opcije
+📋 Kopiraj: Zadrži originalne datoteke
+
+📂 Podmape: Uključi sve podfoldere
+
+🗑️ Obriši originale: Ukloni izvorne datoteke nakon obrade
+
+💾 Backup: Stvori sigurnosnu kopiju
+
+🎨 Filtri i formati
+📅 Sortiraj po: Godina, mjesec, datum, kamera, lokacija, rezolucija, veličina
+
+🖼️ Format slika: Svi, JPG/JPEG, PNG, RAW, HEIC, GIF, TIFF, WebP
+
+📏 Veličina filter: Minimalna i maksimalna veličina u MB
+
+✏️ Preimenovanje
+Predlošci: 10 unaprijed definiranih šablona
+
+Varijable:
+
+{YYYY} - Godina
+
+{MM} - Mjesec
+
+{DD} - Dan
+
+{HH} - Sati
+
+{mm} - Minute
+
+{ss} - Sekunde
+
+{index} - Redni broj
+
+{randomid} - Random ID
+
+{kamera} - Model kamere
+
+{lokacija} - Lokacija (ako je dostupna u EXIF)
+
+{dan} - Naziv dana
+
+{sequenceid} - ID sekvence
+
+🔧 Napredne opcije
+✔️ Preimenuj: Preimenuj datoteke prema šablonu
+
+📂 Zadrži strukturu: Očuvaj hijerarhiju foldera
+
+🚫 Preskoči male: Preskoči male datoteke
+
+📋 Generiraj log: Stvori log datoteku obrade
+
+🔄 Ukloni duplikate: Detektiraj i obradi duplikate
+
+📝 Originalna imena: Zadrži originalna imena datoteka
+
+🌟 Dodatne funkcije
+🎨 Kompresija: Komprimiraj slike (planirano)
+
+🖌️ Vodotisak: Dodaj vodotisak (planirano)
+
+📊 Izlaz i Logovi
+Program generira detaljne logove koji uključuju:
+
+📋 Log datoteka (obrada_log.txt)
+text
+LOG ORGANIZACIJE SLIKA
+Datum: 2024-01-15 14:30:25
+Izvor: C:/Slike/Odgodine
+Određište: D:/OrganiziraneSlike
+Ukupno slika: 1247
+Uspješno obrađeno: 1240
+Duplikata: 7
+Grešaka: 0
+📊 Status u aplikaciji
+Real-time prikaz obrade
+
+Broj obrađenih slika
+
+Detektirani duplikati
+
+Greške (ako postoje)
+
+Progres u postocima
+
+📂 Struktura izlaza
+text
+Odredišni_Direktorij/
+├── 2023/
+│   ├── 01_January/
+│   │   ├── IMG_20230115_143025_0001.jpg
+│   │   └── IMG_20230115_143126_0002.jpg
+│   └── 02_February/
+├── 2024/
+│   └── 01_January/
+├── DUPLIKATI/
+│   └── duplicate_photo1.jpg
+└── obrada_log.txt
+🔧 Tehnički Detalji
+🏗️ Arhitektura
+Glavni proces: Threading za nesmetano korisničko iskustvo
+
+EXIF čitanje: Koristi PIL/Pillow za metapodatke
+
+Hash izračun: MD5 za detekciju duplikata
+
+GUI: Tkinter s modernim temama
+
+📁 Podržani formati
+Format	Podrška	Napomene
+JPG/JPEG	✅ Potpuna	Uključujući EXIF podatke
+PNG	✅ Potpuna	Podržana transparencija
+HEIC	✅ Potpuna	Za Apple uređaje
+RAW	✅ Djelomična	Zavisno o kodeku
+GIF	✅ Potpuna	Animirani i statični
+TIFF	✅ Potpuna	Visoka kvaliteta
+WebP	✅ Potpuna	Moderni format
+🔐 Sigurnosne mjere
+Provjera diskovnog prostora prije obrade
+
+Validacija datoteka prije manipulacije
+
+Exception handling za sve kritične operacije
+
+Rollback mogućnost kroz backup
+
+🛠️ Razvoj
+🧩 Struktura projekta
+text
+organizator_slika_pro/
+├── organizator_slika_pro.py  # Glavna aplikacija
+├── README.md                 # Ova dokumentacija
+├── requirements.txt          # Ovisnosti
+└── examples/                # Primjeri korištenja
+🔨 Lokalni razvoj
+bash
+# 1. Kloniraj repozitorij
+git clone https://github.com/tvoj-username/organizator-slike-pro.git
+
+# 2. Stvori virtualno okruženje
+python -m venv venv
+
+# 3. Aktiviraj virtualno okruženje
+# Na Windowsu:
+venv\Scripts\activate
+# Na Linuxu/MacOS:
+source venv/bin/activate
+
+# 4. Instaliraj ovisnosti
+pip install -r requirements.txt
+
+# 5. Pokreni aplikaciju
+python organizator_slika_pro.py
+🧪 Testiranje
+bash
+# Pokreni jedinične testove
+python -m pytest tests/
+
+# Pokreni integracijske testove
+python tests/integration_tests.py
+🤝 Doprinosi
+Doprinosi su dobrodošli! Molimo vas da:
+
+Fork repozitorij
+
+Kreiraj feature branch (git checkout -b feature/AmazingFeature)
+
+Commitaj promjene (git commit -m 'Add some AmazingFeature')
+
+Pushaj na branch (git push origin feature/AmazingFeature)
+
+Otvori Pull Request
+
+📋 TODO Lista
+🚀 Prioritetne značajke
+Kompresija slika s kontrolom kvalitete
+
+Batch vodotisak s prilagodljivim pozicijama
+
+AI-based tagiranje slika
+
+Geo-tagging i mapiranje lokacija
+
+Cloud integracija (Google Photos, Dropbox)
+
+🔧 Poboljšanja
+Višejezična podrška
+
+Teme sučelja (svijetla/tamna)
+
+Export/import postavki
+
+Napredne statistike
+
+Thumbnail pregled
+
+🐛 Ispravci
+Optimizacija memorije za velike datoteke
+
+Bolja podrška za RAW formate
+
+Poboljšana EXIF ekstrakcija
+
+📝 License
+Distribuirano pod MIT licencom. Pogledajte LICENSE datoteku za više detalja.
+
+👨‍💻 Autor
+Organizator Slika Pro - @tvojusername
+
+🙏 Zahvale
+PIL/Pillow tim za odličnu biblioteku za obradu slika
+
+Python zajednici za fantastičan ekosustav
+
+Svim contributorima koji su pomogli u razvoju
+
+📞 Podrška
+Ako naiđete na probleme ili imate prijedloge:
+
+Provjerite postojeće issues prije otvaranja novog
+
+Opišite problem što je detaljnije moguće
+
+Dodajte screenshotove ako su relevantni
+
+Navedite verziju aplikacije i operativnog sustava
+
+⭐ Podrži projekt davanjem zvjezdice na GitHubu!
+
+🔄 Ažurirano: Januar 2024
+Verzija: 1.0.0
+Status: Stabilan
