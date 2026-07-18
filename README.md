@@ -6,6 +6,12 @@ NAS folders.
 
 The application source is in `media_organizer_pro/`.
 
+## Screenshot
+
+### Main window
+
+![Main window](docs/screenshots/main-window.png)
+
 ## Features
 
 - Organize photos by EXIF date or file date.
