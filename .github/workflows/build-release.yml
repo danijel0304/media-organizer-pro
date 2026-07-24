@@ -40,11 +40,27 @@ jobs:
         run: |
           pyinstaller --noconfirm --clean --onefile --windowed --name MediaOrganizerPro media_organizer_pro/media_organizer_pro.py
 
+      - name: Resolve package version
+        id: package
+        shell: pwsh
+        run: |
+          if ($env:GITHUB_REF_NAME.StartsWith("v")) {
+            "version=$($env:GITHUB_REF_NAME.Substring(1))" >> $env:GITHUB_OUTPUT
+          } else {
+            "version=0.0.0-$env:GITHUB_RUN_NUMBER" >> $env:GITHUB_OUTPUT
+          }
+
+      - name: Package EXE
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path release | Out-Null
+          Copy-Item dist/MediaOrganizerPro.exe "release/MediaOrganizerPro-${{ steps.package.outputs.version }}-windows-x86_64.exe"
+
       - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
           name: MediaOrganizerPro-windows-x86_64
-          path: dist/MediaOrganizerPro.exe
+          path: release/*.exe
           if-no-files-found: error
 
   linux:
@@ -75,6 +91,15 @@ jobs:
         run: |
           pyinstaller --noconfirm --clean --onefile --windowed --name MediaOrganizerPro media_organizer_pro/media_organizer_pro.py
 
+      - name: Resolve package version
+        id: package
+        run: |
+          if [[ "$GITHUB_REF_NAME" == v* ]]; then
+            echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=0.0.0-${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Create generated icon
         run: |
           python - <<'PY'
@@ -101,7 +126,7 @@ jobs:
           mkdir -p package/tar/MediaOrganizerPro
           cp dist/MediaOrganizerPro package/tar/MediaOrganizerPro/MediaOrganizerPro
           cp media_organizer_pro/README.md package/tar/MediaOrganizerPro/README.md
-          tar -czf MediaOrganizerPro-linux-x86_64.tar.gz -C package/tar MediaOrganizerPro
+          tar -czf MediaOrganizerPro-${{ steps.package.outputs.version }}-linux-x86_64.tar.gz -C package/tar MediaOrganizerPro
 
       - name: Create DEB
         run: |
@@ -113,7 +138,7 @@ jobs:
           cp build_assets/media-organizer-pro.png package/deb/usr/share/icons/hicolor/256x256/apps/media-organizer-pro.png
           cat > package/deb/DEBIAN/control <<'EOF'
           Package: media-organizer-pro
-          Version: 1.0.0
+          Version: ${{ steps.package.outputs.version }}
           Section: utils
           Priority: optional
           Architecture: amd64
@@ -131,7 +156,7 @@ jobs:
           Categories=Utility;Graphics;AudioVideo;
           EOF
           chmod 0755 package/deb/usr/bin/media-organizer-pro
-          dpkg-deb --build package/deb MediaOrganizerPro-linux-x86_64.deb
+          dpkg-deb --build package/deb MediaOrganizerPro-${{ steps.package.outputs.version }}-linux-x86_64.deb
 
       - name: Create AppImage
         run: |
@@ -160,9 +185,9 @@ jobs:
           chmod +x package/AppDir/AppRun package/AppDir/usr/bin/media-organizer-pro
           wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
           chmod +x appimagetool
-          ARCH=x86_64 ./appimagetool package/AppDir MediaOrganizerPro-linux-x86_64.AppImage || (
+          ARCH=x86_64 ./appimagetool package/AppDir MediaOrganizerPro-${{ steps.package.outputs.version }}-linux-x86_64.AppImage || (
             ./appimagetool --appimage-extract
-            ARCH=x86_64 ./squashfs-root/AppRun package/AppDir MediaOrganizerPro-linux-x86_64.AppImage
+            ARCH=x86_64 ./squashfs-root/AppRun package/AppDir MediaOrganizerPro-${{ steps.package.outputs.version }}-linux-x86_64.AppImage
           )
 
       - name: Upload Linux artifacts
@@ -170,9 +195,9 @@ jobs:
         with:
           name: MediaOrganizerPro-linux-x86_64
           path: |
-            MediaOrganizerPro-linux-x86_64.tar.gz
-            MediaOrganizerPro-linux-x86_64.deb
-            MediaOrganizerPro-linux-x86_64.AppImage
+            MediaOrganizerPro-*-linux-x86_64.tar.gz
+            MediaOrganizerPro-*-linux-x86_64.deb
+            MediaOrganizerPro-*-linux-x86_64.AppImage
           if-no-files-found: error
 
   release:

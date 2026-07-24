@@ -14,10 +14,13 @@ import hashlib
 import json
 import os
 import queue
+import re
 import shutil
 import subprocess
 import threading
 import time
+import urllib.error
+import urllib.request
 import webbrowser
 from collections import defaultdict
 from dataclasses import dataclass
@@ -59,6 +62,10 @@ except Exception:
 
 
 APP_NAME = "Media Organizer Pro"
+APP_VERSION = "1.0.1"
+GITHUB_REPO = "danijel0304/media-organizer-pro"
+GITHUB_RELEASES_API = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
+GITHUB_RELEASES_URL = f"https://github.com/{GITHUB_REPO}/releases/latest"
 PAYPAL_DONATE_URL = "https://paypal.me/danijel0304"
 IMAGE_EXTENSIONS = {
     ".jpg",
@@ -114,6 +121,17 @@ TRANSLATIONS = {
         "choose": "Choose",
         "donate": "Support via PayPal",
         "donate_title": "PayPal Donate",
+        "version_label": "Version {version}",
+        "check_updates": "Update",
+        "checking_updates": "Checking updates...",
+        "update_available_title": "Update available",
+        "update_available_msg": "A new Media Organizer Pro version is available.\n\nCurrent version: {current}\nNew version: {latest}\n\nOpen the download page?",
+        "update_current_title": "Up to date",
+        "update_current_msg": "You are using the latest version ({current}).",
+        "update_failed_title": "Update check failed",
+        "update_failed_msg": "I could not check for a new version. Check the internet connection and try again.",
+        "update_in_progress_title": "Check in progress",
+        "update_in_progress_msg": "The update check is already running.",
         "tab_dashboard": "Overview",
         "tab_photos": "Photos by date",
         "tab_videos": "Videos by date",
@@ -214,6 +232,17 @@ TRANSLATIONS = {
         "choose": "Odaberi",
         "donate": "Podrzi putem PayPala",
         "donate_title": "PayPal donacija",
+        "version_label": "Verzija {version}",
+        "check_updates": "Update",
+        "checking_updates": "Provjeravam update...",
+        "update_available_title": "Dostupna je nova verzija",
+        "update_available_msg": "Dostupna je nova verzija programa Media Organizer Pro.\n\nTrenutna verzija: {current}\nNova verzija: {latest}\n\nOtvoriti stranicu za preuzimanje?",
+        "update_current_title": "Program je azuran",
+        "update_current_msg": "Koristite najnoviju verziju programa ({current}).",
+        "update_failed_title": "Provjera nije uspjela",
+        "update_failed_msg": "Nisam uspio provjeriti novu verziju. Provjerite internet vezu i pokusajte ponovno.",
+        "update_in_progress_title": "Provjera je u tijeku",
+        "update_in_progress_msg": "Provjera nove verzije vec je pokrenuta.",
         "tab_dashboard": "Pregled",
         "tab_photos": "Slike po datumu",
         "tab_videos": "Video po datumu",
@@ -598,7 +627,7 @@ def fingerprint_similarity(left: tuple[str, Any, int], right: tuple[str, Any, in
 class MediaOrganizerPro(tk.Tk):
     def __init__(self) -> None:
         super().__init__()
-        self.title(APP_NAME)
+        self.title(f"{APP_NAME} v{APP_VERSION}")
         self.geometry("1360x860")
         self.minsize(1180, 760)
 
@@ -625,6 +654,7 @@ class MediaOrganizerPro(tk.Tk):
         self.nas_duplicates: list[NasDuplicate] = []
         self.busy = False
         self.lang = "en"
+        self.update_check_running = False
 
         self.configure(bg=self.colors["bg"])
         self.setup_style()
@@ -851,10 +881,10 @@ class MediaOrganizerPro(tk.Tk):
         header.pack(fill=tk.X, pady=(0, 16))
         title_area = ttk.Frame(header)
         title_area.pack(side=tk.LEFT, fill=tk.X, expand=True)
-        ttk.Label(title_area, text=APP_NAME, style="Title.TLabel").pack(anchor=tk.W)
+        ttk.Label(title_area, text=f"{APP_NAME} v{APP_VERSION}", style="Title.TLabel").pack(anchor=tk.W)
         ttk.Label(
             title_area,
-            text=self.t("app_subtitle"),
+            text=f"{self.t('version_label').format(version=APP_VERSION)} | {self.t('app_subtitle')}",
             style="Subtitle.TLabel",
         ).pack(anchor=tk.W, pady=(4, 0))
 
@@ -871,6 +901,8 @@ class MediaOrganizerPro(tk.Tk):
         )
         language_menu.pack(side=tk.LEFT, padx=(0, 10))
 
+        self.update_button = self.header_button(header_tools, self.t("check_updates"), self.check_for_updates)
+        self.update_button.pack(side=tk.LEFT, padx=(0, 10))
         self.paypal_button(header_tools).pack(side=tk.LEFT, padx=(0, 12))
 
         self.header_status = ttk.Label(header_tools, text=self.t("ready"), style="Subtitle.TLabel")
@@ -918,6 +950,88 @@ class MediaOrganizerPro(tk.Tk):
 
     def open_paypal_donate(self) -> None:
         webbrowser.open(PAYPAL_DONATE_URL)
+
+    def header_button(self, parent: tk.Widget, text: str, command: Callable[[], None]) -> tk.Button:
+        return tk.Button(
+            parent,
+            text=text,
+            command=command,
+            bg=self.colors["panel_alt"],
+            fg=self.colors["text"],
+            activebackground=self.colors["border"],
+            activeforeground=self.colors["text"],
+            bd=0,
+            padx=12,
+            pady=7,
+            cursor="hand2",
+            font=("Segoe UI", 10, "bold"),
+        )
+
+    def version_tuple(self, value: str) -> tuple[int, int, int]:
+        parts = [int(part) for part in re.findall(r"\d+", str(value).lstrip("v"))[:3]]
+        while len(parts) < 3:
+            parts.append(0)
+        return tuple(parts)
+
+    def is_newer_version(self, latest: str, current: str) -> bool:
+        return self.version_tuple(latest) > self.version_tuple(current)
+
+    def check_for_updates(self) -> None:
+        if self.update_check_running:
+            messagebox.showinfo(self.t("update_in_progress_title"), self.t("update_in_progress_msg"))
+            return
+        self.update_check_running = True
+        if hasattr(self, "update_button"):
+            self.update_button.config(state=tk.DISABLED)
+        if hasattr(self, "header_status"):
+            self.header_status.config(text=self.t("checking_updates"))
+        threading.Thread(target=self.update_worker, daemon=True).start()
+
+    def update_worker(self) -> None:
+        release = None
+        error = None
+        try:
+            request = urllib.request.Request(
+                GITHUB_RELEASES_API,
+                headers={
+                    "Accept": "application/vnd.github+json",
+                    "User-Agent": f"MediaOrganizerPro/{APP_VERSION}",
+                },
+            )
+            with urllib.request.urlopen(request, timeout=8) as response:
+                data = json.loads(response.read().decode("utf-8"))
+            if not data.get("draft") and not data.get("prerelease"):
+                release = {
+                    "tag": str(data.get("tag_name", "")).strip(),
+                    "url": data.get("html_url") or GITHUB_RELEASES_URL,
+                }
+        except (OSError, TimeoutError, urllib.error.URLError, ValueError) as exc:
+            error = exc
+
+        try:
+            self.after(0, lambda: self.handle_update_result(release, error))
+        except tk.TclError:
+            pass
+
+    def handle_update_result(self, release: dict[str, str] | None, error: Exception | None) -> None:
+        self.update_check_running = False
+        if hasattr(self, "update_button"):
+            self.update_button.config(state=tk.NORMAL)
+        if hasattr(self, "header_status"):
+            self.header_status.config(text=self.t("ready"))
+
+        if error is not None or not release or not release.get("tag"):
+            messagebox.showwarning(self.t("update_failed_title"), self.t("update_failed_msg"))
+            return
+
+        latest = release["tag"]
+        if not self.is_newer_version(latest, APP_VERSION):
+            messagebox.showinfo(self.t("update_current_title"), self.t("update_current_msg").format(current=APP_VERSION))
+            return
+
+        message = self.t("update_available_msg").format(current=APP_VERSION, latest=latest)
+        if messagebox.askyesno(self.t("update_available_title"), message):
+            webbrowser.open(release["url"], new=2)
 
     def dark_option_menu(
         self,
