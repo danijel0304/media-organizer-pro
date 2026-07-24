@@ -56,4 +56,4 @@ Prije rada nad velikom arhivom prvo testirajte na manjoj kopiji foldera.
 - SHA-256 se cita u chunkovima, pa velike video datoteke ne pune memoriju.
 - Vizualno trazenje slicnih slika vise ne ovisi o tome da datoteke imaju istu velicinu.
 - Rezultati se nakon premjestanja ili brisanja ispravno uklanjaju iz tablica.
-- Stare skripte nisu mijenjane; nova aplikacija je u zasebnom folderu.
+- Stare zasebne skripte su uklonjene iz finalne strukture projekta.
