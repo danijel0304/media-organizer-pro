@@ -32,6 +32,8 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 from tkinter.scrolledtext import ScrolledText
 
+from self_updater import SelfUpdater
+
 try:
     from PIL import Image
     from PIL.ExifTags import TAGS
@@ -62,7 +64,7 @@ except Exception:
 
 
 APP_NAME = "Media Organizer Pro"
-APP_VERSION = "1.0.1"
+APP_VERSION = "1.0.2"
 GITHUB_REPO = "danijel0304/media-organizer-pro"
 GITHUB_RELEASES_API = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
 GITHUB_RELEASES_URL = f"https://github.com/{GITHUB_REPO}/releases/latest"
@@ -977,61 +979,17 @@ class MediaOrganizerPro(tk.Tk):
         return self.version_tuple(latest) > self.version_tuple(current)
 
     def check_for_updates(self) -> None:
-        if self.update_check_running:
-            messagebox.showinfo(self.t("update_in_progress_title"), self.t("update_in_progress_msg"))
-            return
-        self.update_check_running = True
-        if hasattr(self, "update_button"):
-            self.update_button.config(state=tk.DISABLED)
-        if hasattr(self, "header_status"):
-            self.header_status.config(text=self.t("checking_updates"))
-        threading.Thread(target=self.update_worker, daemon=True).start()
-
-    def update_worker(self) -> None:
-        release = None
-        error = None
-        try:
-            request = urllib.request.Request(
-                GITHUB_RELEASES_API,
-                headers={
-                    "Accept": "application/vnd.github+json",
-                    "User-Agent": f"MediaOrganizerPro/{APP_VERSION}",
-                },
-            )
-            with urllib.request.urlopen(request, timeout=8) as response:
-                data = json.loads(response.read().decode("utf-8"))
-            if not data.get("draft") and not data.get("prerelease"):
-                release = {
-                    "tag": str(data.get("tag_name", "")).strip(),
-                    "url": data.get("html_url") or GITHUB_RELEASES_URL,
-                }
-        except (OSError, TimeoutError, urllib.error.URLError, ValueError) as exc:
-            error = exc
-
-        try:
-            self.after(0, lambda: self.handle_update_result(release, error))
-        except tk.TclError:
-            pass
-
-    def handle_update_result(self, release: dict[str, str] | None, error: Exception | None) -> None:
-        self.update_check_running = False
-        if hasattr(self, "update_button"):
-            self.update_button.config(state=tk.NORMAL)
-        if hasattr(self, "header_status"):
-            self.header_status.config(text=self.t("ready"))
-
-        if error is not None or not release or not release.get("tag"):
-            messagebox.showwarning(self.t("update_failed_title"), self.t("update_failed_msg"))
-            return
-
-        latest = release["tag"]
-        if not self.is_newer_version(latest, APP_VERSION):
-            messagebox.showinfo(self.t("update_current_title"), self.t("update_current_msg").format(current=APP_VERSION))
-            return
-
-        message = self.t("update_available_msg").format(current=APP_VERSION, latest=latest)
-        if messagebox.askyesno(self.t("update_available_title"), message):
-            webbrowser.open(release["url"], new=2)
+        SelfUpdater(
+            self,
+            APP_NAME,
+            APP_VERSION,
+            GITHUB_REPO,
+            binary_names=("MediaOrganizerPro.exe", "MediaOrganizerPro", "media-organizer-pro"),
+            linux_command="media-organizer-pro",
+            status_callback=lambda message: self.header_status.config(text=message) if hasattr(self, "header_status") else None,
+            button_getter=lambda: self.update_button if hasattr(self, "update_button") else None,
+            language_getter=lambda: self.language,
+        ).check()
 
     def dark_option_menu(
         self,
