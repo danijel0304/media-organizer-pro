@@ -38,7 +38,7 @@ jobs:
       - name: Build EXE
         shell: pwsh
         run: |
-          pyinstaller --noconfirm --clean --onefile --windowed --name MediaOrganizerPro media_organizer_pro/media_organizer_pro.py
+          pyinstaller --noconfirm --clean --onefile --windowed --icon assets/media-organizer-pro.ico --name MediaOrganizerPro media_organizer_pro/media_organizer_pro.py
 
       - name: Resolve package version
         id: package
@@ -89,7 +89,7 @@ jobs:
 
       - name: Build binary
         run: |
-          pyinstaller --noconfirm --clean --onefile --windowed --name MediaOrganizerPro media_organizer_pro/media_organizer_pro.py
+          pyinstaller --noconfirm --clean --onefile --windowed --icon assets/media-organizer-pro.ico --name MediaOrganizerPro media_organizer_pro/media_organizer_pro.py
 
       - name: Resolve package version
         id: package
@@ -99,27 +99,6 @@ jobs:
           else
             echo "version=0.0.0-${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
           fi
-
-      - name: Create generated icon
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          from PIL import Image, ImageDraw, ImageFont
-
-          out = Path("build_assets")
-          out.mkdir(exist_ok=True)
-          img = Image.new("RGB", (256, 256), "#0b1020")
-          draw = ImageDraw.Draw(img)
-          draw.rounded_rectangle((22, 22, 234, 234), radius=38, fill="#0ea5e9")
-          draw.rounded_rectangle((48, 48, 208, 208), radius=24, outline="#ffffff", width=8)
-          font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 74)
-          text = "MO"
-          box = draw.textbbox((0, 0), text, font=font)
-          x = (256 - (box[2] - box[0])) / 2
-          y = (256 - (box[3] - box[1])) / 2 - 4
-          draw.text((x, y), text, fill="#ffffff", font=font)
-          img.save(out / "media-organizer-pro.png")
-          PY
 
       - name: Create tar.gz
         run: |
@@ -135,7 +114,7 @@ jobs:
           mkdir -p package/deb/usr/share/applications
           mkdir -p package/deb/usr/share/icons/hicolor/256x256/apps
           cp dist/MediaOrganizerPro package/deb/usr/bin/media-organizer-pro
-          cp build_assets/media-organizer-pro.png package/deb/usr/share/icons/hicolor/256x256/apps/media-organizer-pro.png
+          cp assets/media-organizer-pro.png package/deb/usr/share/icons/hicolor/256x256/apps/media-organizer-pro.png
           cat > package/deb/DEBIAN/control <<'EOF'
           Package: media-organizer-pro
           Version: ${{ steps.package.outputs.version }}
@@ -164,9 +143,9 @@ jobs:
           mkdir -p package/AppDir/usr/share/applications
           mkdir -p package/AppDir/usr/share/icons/hicolor/256x256/apps
           cp dist/MediaOrganizerPro package/AppDir/usr/bin/media-organizer-pro
-          cp build_assets/media-organizer-pro.png package/AppDir/media-organizer-pro.png
-          cp build_assets/media-organizer-pro.png package/AppDir/.DirIcon
-          cp build_assets/media-organizer-pro.png package/AppDir/usr/share/icons/hicolor/256x256/apps/media-organizer-pro.png
+          cp assets/media-organizer-pro.png package/AppDir/media-organizer-pro.png
+          cp assets/media-organizer-pro.png package/AppDir/.DirIcon
+          cp assets/media-organizer-pro.png package/AppDir/usr/share/icons/hicolor/256x256/apps/media-organizer-pro.png
           cat > package/AppDir/AppRun <<'EOF'
           #!/bin/sh
           HERE="$(dirname "$(readlink -f "$0")")"

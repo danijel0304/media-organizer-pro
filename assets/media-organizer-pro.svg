@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Media Organizer Pro">
+  <defs><linearGradient id="a" x1="24" y1="18" x2="232" y2="238" gradientUnits="userSpaceOnUse"><stop stop-color="#ffa663"/><stop offset=".46" stop-color="#ef5b89"/><stop offset="1" stop-color="#56349c"/></linearGradient></defs>
+  <rect width="256" height="256" rx="58" fill="url(#a)"/><path d="M49 86c0-13 11-24 24-24h41l15 19h54c13 0 24 11 24 24v71c0 13-11 24-24 24H73c-13 0-24-11-24-24V86Z" fill="#fff7e9"/>
+  <rect x="73" y="103" width="111" height="73" rx="18" fill="#7a3f8f"/><circle cx="128" cy="140" r="22" fill="#ffd666"/><circle cx="128" cy="140" r="10" fill="#56349c"/><path d="m159 159 25 25" stroke="#ffd666" stroke-width="11" stroke-linecap="round"/>
+</svg>
