@@ -64,7 +64,7 @@ except Exception:
 
 
 APP_NAME = "Media Organizer Pro"
-APP_VERSION = "1.0.2"
+APP_VERSION = "1.0.4"
 GITHUB_REPO = "danijel0304/media-organizer-pro"
 GITHUB_RELEASES_API = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
 GITHUB_RELEASES_URL = f"https://github.com/{GITHUB_REPO}/releases/latest"
@@ -664,6 +664,7 @@ class MediaOrganizerPro(tk.Tk):
         self.setup_variables()
         self.setup_shell()
         self.after(100, self.flush_log_queue)
+        self.after(1200, lambda: self.check_for_updates(silent=True))
 
     def setup_style(self) -> None:
         style = ttk.Style(self)
@@ -978,7 +979,7 @@ class MediaOrganizerPro(tk.Tk):
     def is_newer_version(self, latest: str, current: str) -> bool:
         return self.version_tuple(latest) > self.version_tuple(current)
 
-    def check_for_updates(self) -> None:
+    def check_for_updates(self, *, silent: bool = False) -> None:
         SelfUpdater(
             self,
             APP_NAME,
@@ -989,7 +990,7 @@ class MediaOrganizerPro(tk.Tk):
             status_callback=lambda message: self.header_status.config(text=message) if hasattr(self, "header_status") else None,
             button_getter=lambda: self.update_button if hasattr(self, "update_button") else None,
             language_getter=lambda: self.language,
-        ).check()
+        ).check(show_current=not silent, show_errors=not silent)
 
     def dark_option_menu(
         self,
