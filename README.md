@@ -25,6 +25,16 @@ The application source is in `media_organizer_pro/`.
 
 ## Run From Source
 
+On Linux or macOS:
+
+```bash
+./run_media_organizer_pro.sh
+```
+
+On Windows, double-click `run_media_organizer_pro.bat`.
+
+You can also run it manually:
+
 ```bash
 cd media_organizer_pro
 python3 media_organizer_pro.py

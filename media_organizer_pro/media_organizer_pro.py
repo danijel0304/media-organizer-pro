@@ -17,6 +17,7 @@ import queue
 import re
 import shutil
 import subprocess
+import sys
 import threading
 import time
 import urllib.error
@@ -65,6 +66,60 @@ except Exception:
 
 APP_NAME = "Media Organizer Pro"
 APP_VERSION = "1.0.5"
+
+
+def get_assets_dir() -> Path:
+    source_assets = Path(__file__).resolve().parent.parent / "assets"
+    bundled_assets = Path(getattr(sys, "_MEIPASS", source_assets)) / "assets"
+    return bundled_assets if bundled_assets.exists() else source_assets
+
+
+def set_window_icon(window: tk.Tk) -> None:
+    assets_dir = get_assets_dir()
+    try:
+        image = tk.PhotoImage(file=str(assets_dir / "media-organizer-pro.png"))
+        window.iconphoto(True, image)
+        window._window_icon_image = image
+    except tk.TclError:
+        pass
+    if os.name == "nt":
+        try:
+            window.iconbitmap(default=str(assets_dir / "media-organizer-pro.ico"))
+        except tk.TclError:
+            pass
+
+
+class StartupSplash(tk.Tk):
+    """Small startup window shown while the main interface is being prepared."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.configure(bg="#0b1020")
+        self.overrideredirect(True)
+        self.resizable(False, False)
+        set_window_icon(self)
+
+        card = tk.Frame(self, bg="#111827", highlightbackground="#263247", highlightthickness=1)
+        card.pack(fill=tk.BOTH, expand=True)
+
+        try:
+            image = tk.PhotoImage(file=str(get_assets_dir() / "media-organizer-pro.png"))
+            self._splash_image = image.subsample(2, 2)
+            tk.Label(card, image=self._splash_image, bg="#111827", bd=0).pack(padx=28, pady=(24, 8))
+        except tk.TclError:
+            tk.Label(card, text="M", bg="#111827", fg="#38bdf8", font=("Segoe UI", 72, "bold")).pack(padx=28, pady=(38, 16))
+
+        tk.Label(card, text=APP_NAME, bg="#111827", fg="#e5e7eb", font=("Segoe UI", 18, "bold")).pack()
+        tk.Label(card, text="Pokrećem aplikaciju…", bg="#111827", fg="#94a3b8", font=("Segoe UI", 10)).pack(pady=(6, 22))
+
+        self.update_idletasks()
+        width, height = self.winfo_reqwidth(), self.winfo_reqheight()
+        x = (self.winfo_screenwidth() - width) // 2
+        y = (self.winfo_screenheight() - height) // 2
+        self.geometry(f"{width}x{height}+{x}+{y}")
+        self.after(3000, self.destroy)
+
+
 GITHUB_REPO = "danijel0304/media-organizer-pro"
 GITHUB_RELEASES_API = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
 GITHUB_RELEASES_URL = f"https://github.com/{GITHUB_REPO}/releases/latest"
@@ -630,23 +685,12 @@ class MediaOrganizerPro(tk.Tk):
     def __init__(self) -> None:
         super().__init__()
         self.title(f"{APP_NAME} v{APP_VERSION}")
+        set_window_icon(self)
         self.geometry("1360x860")
         self.minsize(1180, 760)
 
-        self.colors = {
-            "bg": "#0b1020",
-            "panel": "#111827",
-            "panel_alt": "#172033",
-            "border": "#263247",
-            "text": "#e5e7eb",
-            "muted": "#94a3b8",
-            "accent": "#38bdf8",
-            "accent_dark": "#0ea5e9",
-            "success": "#22c55e",
-            "warning": "#f59e0b",
-            "danger": "#ef4444",
-            "entry": "#0f172a",
-        }
+        self.dark_mode = True
+        self.colors = self.theme_colors()
 
         self.log_queue: queue.Queue[tuple[str, str]] = queue.Queue()
         self.log_lines: list[str] = []
@@ -665,6 +709,26 @@ class MediaOrganizerPro(tk.Tk):
         self.setup_shell()
         self.after(100, self.flush_log_queue)
         self.after(1200, lambda: self.check_for_updates(silent=True))
+
+    def theme_colors(self) -> dict[str, str]:
+        if self.dark_mode:
+            return {
+                "bg": "#0b1020", "panel": "#111827", "panel_alt": "#172033", "border": "#263247",
+                "text": "#e5e7eb", "muted": "#94a3b8", "accent": "#38bdf8", "accent_dark": "#0ea5e9",
+                "success": "#22c55e", "warning": "#f59e0b", "danger": "#ef4444", "entry": "#0f172a",
+            }
+        return {
+            "bg": "#f1f5f9", "panel": "#ffffff", "panel_alt": "#e7eef7", "border": "#cbd5e1",
+            "text": "#172033", "muted": "#52657a", "accent": "#0284c7", "accent_dark": "#0369a1",
+            "success": "#16a34a", "warning": "#d97706", "danger": "#dc2626", "entry": "#f8fafc",
+        }
+
+    def toggle_theme(self) -> None:
+        self.dark_mode = not self.dark_mode
+        self.colors = self.theme_colors()
+        self.configure(bg=self.colors["bg"])
+        self.setup_tk_options()
+        self.rebuild_shell()
 
     def setup_style(self) -> None:
         style = ttk.Style(self)
@@ -903,6 +967,13 @@ class MediaOrganizerPro(tk.Tk):
             width=11,
         )
         language_menu.pack(side=tk.LEFT, padx=(0, 10))
+
+        self.theme_button = self.header_button(
+            header_tools,
+            "Svijetla tema" if self.dark_mode else "Tamna tema",
+            self.toggle_theme,
+        )
+        self.theme_button.pack(side=tk.LEFT, padx=(0, 10))
 
         self.update_button = self.header_button(header_tools, self.t("check_updates"), self.check_for_updates)
         self.update_button.pack(side=tk.LEFT, padx=(0, 10))
@@ -2158,6 +2229,8 @@ class MediaOrganizerPro(tk.Tk):
 
 
 def main() -> None:
+    splash = StartupSplash()
+    splash.mainloop()
     app = MediaOrganizerPro()
     app.mainloop()
 
