@@ -112,9 +112,9 @@ jobs:
           mkdir -p package/deb/DEBIAN
           mkdir -p package/deb/usr/bin
           mkdir -p package/deb/usr/share/applications
-          mkdir -p package/deb/usr/share/icons/hicolor/256x256/apps
+          mkdir -p package/deb/usr/share/icons/hicolor/512x512/apps
           cp dist/MediaOrganizerPro package/deb/usr/bin/media-organizer-pro
-          cp assets/media-organizer-pro.png package/deb/usr/share/icons/hicolor/256x256/apps/media-organizer-pro.png
+          cp assets/media-organizer-pro.png package/deb/usr/share/icons/hicolor/512x512/apps/media-organizer-pro.png
           cat > package/deb/DEBIAN/control <<'EOF'
           Package: media-organizer-pro
           Version: ${{ steps.package.outputs.version }}
@@ -141,11 +141,11 @@ jobs:
         run: |
           mkdir -p package/AppDir/usr/bin
           mkdir -p package/AppDir/usr/share/applications
-          mkdir -p package/AppDir/usr/share/icons/hicolor/256x256/apps
+          mkdir -p package/AppDir/usr/share/icons/hicolor/512x512/apps
           cp dist/MediaOrganizerPro package/AppDir/usr/bin/media-organizer-pro
           cp assets/media-organizer-pro.png package/AppDir/media-organizer-pro.png
           cp assets/media-organizer-pro.png package/AppDir/.DirIcon
-          cp assets/media-organizer-pro.png package/AppDir/usr/share/icons/hicolor/256x256/apps/media-organizer-pro.png
+          cp assets/media-organizer-pro.png package/AppDir/usr/share/icons/hicolor/512x512/apps/media-organizer-pro.png
           cat > package/AppDir/AppRun <<'EOF'
           #!/bin/sh
           HERE="$(dirname "$(readlink -f "$0")")"
