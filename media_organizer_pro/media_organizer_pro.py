@@ -65,7 +65,7 @@ except Exception:
 
 
 APP_NAME = "Media Organizer Pro"
-APP_VERSION = "1.0.6"
+APP_VERSION = "1.0.7"
 
 
 def get_assets_dir() -> Path:
