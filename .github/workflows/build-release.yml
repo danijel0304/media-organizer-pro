@@ -79,7 +79,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3-tk libgl1 libglib2.0-0 desktop-file-utils dpkg-dev wget
+          sudo apt-get install -y python3-tk libgl1 libglib2.0-0 desktop-file-utils dpkg-dev wget rpm
 
       - name: Install Python dependencies
         run: |
@@ -137,6 +137,36 @@ jobs:
           chmod 0755 package/deb/usr/bin/media-organizer-pro
           dpkg-deb --build package/deb MediaOrganizerPro-${{ steps.package.outputs.version }}-linux-x86_64.deb
 
+      - name: Create RPM
+        run: |
+          VERSION="${{ steps.package.outputs.version }}"
+          RPM_VERSION="${VERSION//-/.}"
+          mkdir -p rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+          cat > rpmbuild/SPECS/media-organizer-pro.spec <<EOF
+          Name: media-organizer-pro
+          Version: ${RPM_VERSION}
+          Release: 1%{?dist}
+          Summary: Desktop media organizer and duplicate finder
+          License: MIT
+          BuildArch: x86_64
+
+          %description
+          Desktop application for organizing media and finding duplicates.
+
+          %install
+          install -Dm755 dist/MediaOrganizerPro %{buildroot}%{_bindir}/media-organizer-pro
+          install -Dm644 assets/media-organizer-pro.png %{buildroot}%{_datadir}/icons/hicolor/512x512/apps/media-organizer-pro.png
+          install -Dm644 package/deb/usr/share/applications/media-organizer-pro.desktop %{buildroot}%{_datadir}/applications/media-organizer-pro.desktop
+
+          %files
+          %{_bindir}/media-organizer-pro
+          %{_datadir}/icons/hicolor/512x512/apps/media-organizer-pro.png
+          %{_datadir}/applications/media-organizer-pro.desktop
+          EOF
+          sed -i 's/^          //' rpmbuild/SPECS/media-organizer-pro.spec
+          rpmbuild -bb --define "_topdir $PWD/rpmbuild" rpmbuild/SPECS/media-organizer-pro.spec
+          cp rpmbuild/RPMS/x86_64/*.rpm MediaOrganizerPro-${VERSION}-linux-x86_64.rpm
+
       - name: Create AppImage
         run: |
           mkdir -p package/AppDir/usr/bin
@@ -176,6 +206,7 @@ jobs:
           path: |
             MediaOrganizerPro-*-linux-x86_64.tar.gz
             MediaOrganizerPro-*-linux-x86_64.deb
+            MediaOrganizerPro-*-linux-x86_64.rpm
             MediaOrganizerPro-*-linux-x86_64.AppImage
           if-no-files-found: error
 
@@ -214,4 +245,5 @@ jobs:
             - Linux AppImage
             - Linux tar.gz
             - Linux deb
+            - Linux RPM
           files: release-artifacts/**/*
